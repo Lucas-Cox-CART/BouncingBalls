@@ -1,5 +1,5 @@
 html, body {
-  margin: 0;
+  background-color: black;
 }
 
 html {
@@ -19,7 +19,18 @@ h1 {
   margin: 0;
   top: -4px;
   right: 5px;
-
   color: transparent;
   text-shadow: 0 0 4px white;
+}
+
+section {
+  display: inline;
+}
+
+.nut {
+  height: 100px;
+  width: 100px;
+  clip-path: circle(45px at 50px 50px);
+  position: relative;
+  z-index: 1;
 }

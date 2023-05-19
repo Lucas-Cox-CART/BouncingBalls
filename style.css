@@ -27,7 +27,7 @@ section {
   display: inline;
 }
 
-.nut {
+div {
   height: 100px;
   width: 100px;
   clip-path: circle(45px at 50px 50px);

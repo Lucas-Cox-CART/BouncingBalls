@@ -28,9 +28,9 @@ section {
 }
 
 div {
-  height: 100px;
-  width: 100px;
-  clip-path: circle(45px at 50px 50px);
-  position: relative;
+  height: 50px;
+  width: 50px;
+  clip-path: circle(25px at 25px 25px);
+  position: absolute;
   z-index: 1;
 }

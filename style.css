@@ -28,9 +28,6 @@ section {
 }
 
 div {
-  height: 50px;
-  width: 50px;
-  clip-path: circle(25px at 25px 25px);
   position: absolute;
   z-index: 1;
 }

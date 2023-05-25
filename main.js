@@ -1,42 +1,76 @@
 const section = document.querySelector('section');
 const h1 = document.querySelector('h1');
-const nut = [];
-const nutCount = 60; //The # of nuts spawned. Higher #'s cause performance issues. Default: 15
-const time = 10;
-const speedBank = [[[], []], [[], []]];
+const UI = document.getElementById('UI');
+const arrow = document.getElementById('arrow');
 
+let currentdate = new Date();
+let dateTime = "Local: [" + currentdate.getHours() + ":" + currentdate.getMinutes() + "]";
+
+// USER INTERFACE
+let UIActive = true;
+arrow.setAttribute('draggable', false);
+h1.setAttribute('draggable', false);
+arrow.addEventListener('click', (e) => {
+    if (UIActive == true) {
+        UI.style.animationName = `revealUI`;
+        UIActive = false;
+    } else if (UIActive == false) {
+        UI.style.animationName = `hideUI`;
+        UIActive = true;
+    }
+});
+
+let nutCountNumber = document.getElementById('nutCountNumber');
+nutCountNumber.addEventListener('change', (e) => {
+    nutCountNumber = document.getElementById('nutCountNumber').value;
+    if (nutCountNumber < 0) {
+        document.getElementById('alert').innerText += `\n\n${dateTime}` + " Can't have negative nuts!";
+        nutCount = 0;
+        document.getElementById('nutCountNumber').value = "0";
+    } else if (nutCountNumber != parseInt(nutCountNumber)) {
+        document.getElementById('alert').innerText += `\n\n${dateTime}` + " That entered value was invalid, so we rounded to the closest thing.";
+        nutCount = parseInt(nutCountNumber);
+        document.getElementById('nutCountNumber').value = `${nutCount}`;
+    } 
+});
+
+// BEHIND-THE-SCENES
+const nut = [];
+let nutCount = 10; //The # of nuts spawned. Higher #'s cause performance issues. Default: 15
+const time = 10;
+const width = window.innerWidth;
+const height = window.innerHeight;
 for (let i = 0; i < nutCount; i++) {
-    //NUT TIME DILATION [DEBUG TOOL]
+    // NUT TIME DILATION [DEBUG TOOL]
     h1.addEventListener('click', (e) => {
         clearInterval(colorInterval);
         clearInterval(travelInterval);
         clearInterval(boundaryInterval);
     });
-    //NUT GENESIS
+    // NUT GENESIS
     nut[i] = {
         root: document.createElement('div'),
-        size: 1, //Changes size of nuts. Recommended 0.75-2.0. Default: 1
+        size: 1.25, //Changes size of nuts. Recommended 0.75-2.0. Default: 1
         color: [(Math.random()*255), (Math.random()*255), (Math.random()*255)],
         position: [(Math.random()*100).toFixed(2) - 0, (Math.random()*100).toFixed(2) - 0],
         vector: Math.random()*360
     };
-    //NUT ATTRIBUTE REASSIGNMENT
+    // NUT INITIAL COMPILATION
     nut[i].vector = [Math.cos(nut[i].vector), Math.sin(nut[i].vector)];
-    //NUT INITIAL COMPILATION
     nut[i].root.style.width = `${nut[i].size*50}px`;
     nut[i].root.style.height = `${nut[i].size*50}px`;
     nut[i].root.style.clipPath = `circle(${nut[i].size*25}px at ${nut[i].size*25}px ${nut[i].size*25}px)`;
     nut[i].root.style.backgroundColor = `rgba(${nut[i].color[0]}, ${nut[i].color[1]}, ${nut[i].color[2]})`;
     nut[i].root.style.left = nut[i].position[0] + '%';
     nut[i].root.style.top = nut[i].position[1] + '%';
-    //NUT SPEED [INCOMPLETE]
+    // NUT SPEED
     let travelInterval = setInterval(() => {nutTravel();}, time);
     function nutTravel() {  
         nut[i].root.style.left = ((nut[i].position[0] += (1 * nut[i].vector[0])) / nut[i].size) + '%';
         nut[i].root.style.top = ((nut[i].position[1] += (1 * nut[i].vector[1])) / nut[i].size) + '%';
         detectCollision();
     }
-    //NUT COLOR SHIFT
+    // NUT COLOR SHIFT
     let colorInterval = setInterval(() => {colorTransition();}, time);
     function colorTransition() {
         if (nut[i].color[0] >= 255) {
@@ -51,26 +85,26 @@ for (let i = 0; i < nutCount; i++) {
         nut[i].color[2] += 1;
         nut[i].root.style.backgroundColor = `rgba(${nut[i].color[0]}, ${nut[i].color[1]}, ${nut[i].color[2]})`;
     }
-    //NUT RADIANCE [PLANNED]
-    //NUT PHYSICS I: BOUNDARIES [BUGGED]
+    // NUT RADIANCE [PLANNED]
+    // NUT PHYSICS I: BOUNDARIES
     let boundaryInterval = setInterval(() => {nutBoundary();}, time);
     let nutLeftNum = [];
     let nutTopNum = [];
     function nutBoundary() {
         //SCENE WALL
-        nutLeftNum[i] = (parseInt(nut[i].root.style.left, time));
-        nutTopNum[i] = (parseInt(nut[i].root.style.top, time));
-        if (nutLeftNum[i] >= (100 - nut[i].size*1.7) || nutLeftNum[i] <= 0) {
+        nutLeftNum[i] = (parseFloat(nut[i].root.style.left, 10))*width/100;
+        nutTopNum[i] = (parseFloat(nut[i].root.style.top, 10))*height/100;
+        if (nutLeftNum[i] >= (width - nut[i].size*1.7) || nutLeftNum[i] <= 0) {
             nut[i].vector[0] *= -1;
-        } else if (nutTopNum[i] >= (100 - nut[i].size*1.7) || nutTopNum[i] <= 0) {
+        } else if (nutTopNum[i] >= (height - nut[i].size*1.7) || nutTopNum[i] <= 0) {
             nut[i].vector[1] *= -1;
         } 
-        //CELL BOUNDARIES
-        if (nutLeftNum[i] >= 105 || nutLeftNum[i] <= -105) {
+        // CELL BOUNDARIES
+        if (nutLeftNum[i] >= width + 5 || nutLeftNum[i] <= -width - 5) {
             nut[i].root.style.left = ((nut[i].position[0] += (1 * nut[i].vector[0])) / nut[i].size) + '%';
             nut[i].root.style.top = ((nut[i].position[1] += (1 * nut[i].vector[1])) / nut[i].size) + '%';
             nut[i].position = [(Math.random()*100).toFixed(2) - 0, (Math.random()*100).toFixed(2) - 0];
-        } else if (nutTopNum[i] >= 105 || nutTopNum[i] <= -105) {
+        } else if (nutTopNum[i] >= height + 5 || nutTopNum[i] <= -height - 5) {
             nut[i].root.style.left = ((nut[i].position[0] += (1 * nut[i].vector[0])) / nut[i].size) + '%';
             nut[i].root.style.top = ((nut[i].position[1] += (1 * nut[i].vector[1])) / nut[i].size) + '%';
             nut[i].position = [(Math.random()*100).toFixed(2) - 0, (Math.random()*100).toFixed(2) - 0];
@@ -89,15 +123,15 @@ for (let i = 0; i < nutCount; i++) {
                     ball1.vector[1] *= -1;
                     ball2.vector[0] *= -1;
                     ball2.vector[1] *= -1;
-                    // gravityPhysics(j);
-                    fusionPhysics(j);
+                    // gravityPhysics();
+                    // fusionPhysics(j);
                     // fissionPhysics(j);
                 }
             }
         }
     }
-    //NUT PHYSICS II: GRAVITY
-    //NUT PHYSICS III: FUSION
+    // NUT PHYSICS II: GRAVITY [PLANNED]
+    // NUT PHYSICS III: FUSION
     function fusionPhysics(j) {
         nut[i].size += (nut[j].size/6);
         nut[i].root.style.width = `${nut[i].size*50}px`;
@@ -107,5 +141,5 @@ for (let i = 0; i < nutCount; i++) {
             nut[j].root.remove();
         }
     }
-    //NUT PHYSICS IV: FISSION [PLANNED]
+    // NUT PHYSICS IV: FISSION [PLANNED]
 }

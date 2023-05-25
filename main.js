@@ -4,7 +4,7 @@ const UI = document.getElementById('UI');
 const arrow = document.getElementById('arrow');
 
 let currentdate = new Date();
-let dateTime = "Local: [" + currentdate.getHours() + ":" + currentdate.getMinutes() + "]";
+let dateTime = "Local: [" + currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds() + "]";
 
 // USER INTERFACE
 let UIActive = true;
@@ -19,7 +19,6 @@ arrow.addEventListener('click', (e) => {
         UIActive = true;
     }
 });
-
 let nutCountNumber = document.getElementById('nutCountNumber');
 nutCountNumber.addEventListener('change', (e) => {
     nutCountNumber = document.getElementById('nutCountNumber').value;
@@ -28,8 +27,8 @@ nutCountNumber.addEventListener('change', (e) => {
         nutCount = 0;
         document.getElementById('nutCountNumber').value = "0";
     } else if (nutCountNumber != parseInt(nutCountNumber)) {
-        document.getElementById('alert').innerText += `\n\n${dateTime}` + " That entered value was invalid, so we rounded to the closest thing.";
-        nutCount = parseInt(nutCountNumber);
+        document.getElementById('alert').innerText += `\n\n${dateTime}` + " Can only accept integers. Rounded to nearest value.";
+        nutCount = Math.round(nutCountNumber);
         document.getElementById('nutCountNumber').value = `${nutCount}`;
     } 
 });

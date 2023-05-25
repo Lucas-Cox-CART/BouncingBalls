@@ -69,8 +69,8 @@ div {
 }
 
 #arrow {
-  height: 50px;
-  width: 50px;
+  height: 6%;
+  width: 12%;
   background-color: white;
   clip-path: polygon(100% 50%, 60% 100%, 60% 65%, 0 65%, 0 35%, 60% 35%, 60% 0);
   transform: rotateZ(180deg);
@@ -107,9 +107,14 @@ div {
   width: 1.3em;
 }
 
-#alert::-webkit-scrollbar-track-piece {
+#alert::-webkit-scrollbar-thumb {
   background-color: rgb(41, 47, 54);
-  width: 50%;
+  border-radius: 10px;
+  margin: 1px;
+}
+
+#alert::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(30, 39, 35);
 }
 
 .nutHolder {

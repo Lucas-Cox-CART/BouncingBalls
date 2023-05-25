@@ -30,12 +30,12 @@ nutCountNumber.addEventListener('change', (e) => {
         document.getElementById('alert').innerText += `\n\n${dateTime}` + " Can only accept integers. Rounded to nearest value.";
         nutCount = Math.round(nutCountNumber);
         document.getElementById('nutCountNumber').value = `${nutCount}`;
-    } 
+    }
 });
 
 // BEHIND-THE-SCENES
 const nut = [];
-let nutCount = 10; //The # of nuts spawned. Higher #'s cause performance issues. Default: 15
+let nutCount = 10;
 const time = 10;
 const width = window.innerWidth;
 const height = window.innerHeight;
@@ -49,7 +49,7 @@ for (let i = 0; i < nutCount; i++) {
     // NUT GENESIS
     nut[i] = {
         root: document.createElement('div'),
-        size: 1.25, //Changes size of nuts. Recommended 0.75-2.0. Default: 1
+        size: 1.25,
         color: [(Math.random()*255), (Math.random()*255), (Math.random()*255)],
         position: [(Math.random()*100).toFixed(2) - 0, (Math.random()*100).toFixed(2) - 0],
         vector: Math.random()*360

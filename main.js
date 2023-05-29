@@ -2,7 +2,6 @@ const section = document.querySelector('section');
 const h1 = document.querySelector('h1');
 const UI = document.getElementById('UI');
 const arrow = document.getElementById('arrow');
-
 let currentdate = new Date();
 let dateTime = "Local: [" + currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds() + "]";
 
@@ -19,21 +18,79 @@ arrow.addEventListener('click', (e) => {
         UIActive = true;
     }
 });
+// WELCOMING LETTER
+let errorNotif = document.getElementById('alert');
+errorNotif.innerText += `Hello and welcome to my project, Bouncing Balls. It started small and once I realized that I should've gone to canvas instead of DOM elements it was already too late. Anyways, here we are now; this site is a simulation of balls under different gravity, physics, numbers, and sizes. There are a few bugs as boundaries and bounding boxes are extremely unreliable sources for collision detection but that is because of my folly. I have nothing else left to add, so enjoy messing around and have a good one.\n -Lucas`;
+// NUT COUNT UI
 let nutCountNumber = document.getElementById('nutCountNumber');
 nutCountNumber.addEventListener('change', (e) => {
     nutCountNumber = document.getElementById('nutCountNumber').value;
     if (nutCountNumber < 0) {
-        document.getElementById('alert').innerText += `\n\n${dateTime}` + " Can't have negative nuts!";
+        errorNotif.innerText += `\n\n${dateTime}` + " Can't have negative nuts!";
         nutCount = 0;
         document.getElementById('nutCountNumber').value = "0";
     } else if (nutCountNumber != parseInt(nutCountNumber)) {
-        document.getElementById('alert').innerText += `\n\n${dateTime}` + " Can only accept integers. Rounded to nearest value.";
+        errorNotif.innerText += `\n\n${dateTime}` + " Can only accept integers. Rounded to nearest value.";
         nutCount = Math.round(nutCountNumber);
         document.getElementById('nutCountNumber').value = `${nutCount}`;
     }
 });
+// NUT SIZE UI
+let nutSizeNumber = document.getElementById('nutSizeNumber');
+nutSizeNumber.addEventListener('change', (e) => {
+    nutSizeNumber = document.getElementById('nutSizeNumber').value;
+    if (nutSizeNumber <= 0) {
+        errorNotif.innerText += `\n\n${dateTime}` + " Nut size has to be greater than 0!";
+        for (let i = 0; i < nutCount; i++) {
+            nut[i].size = nutSizeNumber;
+        }
+        document.getElementById('nutSizeNumber').value = "1";
+    }
+});
+// NUT GRAVITY UI
+let gravityOptions = [];
+for (let o = 0; o < 3; o++) {
+    gravityOptions[o] = document.getElementById(`gravity${o}`);
+    gravityOptions[o].classList.add('selected');
+}
+gravityOptions[0].addEventListener('click', (e) => {
+    gravityOptions[0].style.animationName = "selectedMode1";
+    gravityOptions[1].style.animationName = "selectedMode2Rev";
+    gravityOptions[2].style.animationName = "selectedMode3Rev";
+});
+gravityOptions[1].addEventListener('click', (e) => {
+    gravityOptions[1].style.animationName = "selectedMode2";
+    gravityOptions[0].style.animationName = "selectedMode1Rev";
+    gravityOptions[2].style.animationName = "selectedMode3Rev";
+});
+gravityOptions[2].addEventListener('click', (e) => {
+    gravityOptions[2].style.animationName = "selectedMode3";
+    gravityOptions[0].style.animationName = "selectedMode1Rev";
+    gravityOptions[1].style.animationName = "selectedMode2Rev";
+});
+// NUT PHYSICS UI
+let physicsOptions = [];
+for (let o = 0; o < 3; o++) {
+    physicsOptions[o] = document.getElementById(`physics${o}`);
+    physicsOptions[o].classList.add('selected');
+}
+physicsOptions[0].addEventListener('click', (e) => {
+    physicsOptions[0].style.animationName = "selectedTaut1";
+    physicsOptions[1].style.animationName = "selectedTaut2Rev";
+    physicsOptions[2].style.animationName = "selectedTaut3Rev";
+});
+physicsOptions[1].addEventListener('click', (e) => {
+    physicsOptions[1].style.animationName = "selectedTaut2";
+    physicsOptions[0].style.animationName = "selectedTaut1Rev";
+    physicsOptions[2].style.animationName = "selectedTaut3Rev";
+});
+physicsOptions[2].addEventListener('click', (e) => {
+    physicsOptions[2].style.animationName = "selectedTaut3";
+    physicsOptions[0].style.animationName = "selectedTaut1Rev";
+    physicsOptions[1].style.animationName = "selectedTaut2Rev";
+});
 
-// BEHIND-THE-SCENES
+// NUT CODE
 const nut = [];
 let nutCount = 10;
 const time = 10;
@@ -56,6 +113,7 @@ for (let i = 0; i < nutCount; i++) {
     };
     // NUT INITIAL COMPILATION
     nut[i].vector = [Math.cos(nut[i].vector), Math.sin(nut[i].vector)];
+    nut[i].root.classList.add('nut');
     nut[i].root.style.width = `${nut[i].size*50}px`;
     nut[i].root.style.height = `${nut[i].size*50}px`;
     nut[i].root.style.clipPath = `circle(${nut[i].size*25}px at ${nut[i].size*25}px ${nut[i].size*25}px)`;
@@ -84,8 +142,7 @@ for (let i = 0; i < nutCount; i++) {
         nut[i].color[2] += 1;
         nut[i].root.style.backgroundColor = `rgba(${nut[i].color[0]}, ${nut[i].color[1]}, ${nut[i].color[2]})`;
     }
-    // NUT RADIANCE [PLANNED]
-    // NUT PHYSICS I: BOUNDARIES
+    // SIMULATION BOUNDARIES
     let boundaryInterval = setInterval(() => {nutBoundary();}, time);
     let nutLeftNum = [];
     let nutTopNum = [];
@@ -110,6 +167,7 @@ for (let i = 0; i < nutCount; i++) {
         }
     }
     section.append(nut[i].root);
+    // NUT PHYSICS: COLLISION
     function detectCollision() {
         const ball1 = nut[i];
         for (let j = 0; j < nut.length; j++) {
@@ -122,16 +180,18 @@ for (let i = 0; i < nutCount; i++) {
                     ball1.vector[1] *= -1;
                     ball2.vector[0] *= -1;
                     ball2.vector[1] *= -1;
-                    // gravityPhysics();
-                    // fusionPhysics(j);
-                    // fissionPhysics(j);
+                    // gravityLocal();
+                    // gravityCentral();
+                    // physicsFusion(j);
+                    // physicsFission(j);
                 }
             }
         }
     }
-    // NUT PHYSICS II: GRAVITY [PLANNED]
-    // NUT PHYSICS III: FUSION
-    function fusionPhysics(j) {
+    // NUT GRAVITY: LOCALIZED [PLANNED]
+    // NUT GRAVITY: CENTRALIZED [PLANNED]
+    // NUT PHYSICS: FUSION
+    function physicsFusion(j) {
         nut[i].size += (nut[j].size/6);
         nut[i].root.style.width = `${nut[i].size*50}px`;
         nut[i].root.style.height = `${nut[i].size*50}px`;
@@ -140,5 +200,5 @@ for (let i = 0; i < nutCount; i++) {
             nut[j].root.remove();
         }
     }
-    // NUT PHYSICS IV: FISSION [PLANNED]
+    // NUT PHYSICS: FISSION [PLANNED]
 }
